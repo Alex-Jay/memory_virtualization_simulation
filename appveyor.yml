@@ -3,3 +3,5 @@ image: Previous Ubuntu1804
 platform: x86
 build_script:
 - sh: make Makefile
+test_script:
+- sh: ./dist/main.sim
