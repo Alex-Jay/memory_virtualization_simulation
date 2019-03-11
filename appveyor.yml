@@ -4,4 +4,5 @@ platform: x86
 build_script:
 - sh: make Makefile
 test_script:
+- sh: ls
 - sh: ./dist/main.sim
