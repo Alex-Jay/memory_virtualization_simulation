@@ -9,6 +9,9 @@ install:
 
     sudo apt-get build-essential
 build_script:
-- sh: make Makefile
+- sh: >-
+    ls
+
+    make
 test_script:
 - sh: ./dist/main.sim
