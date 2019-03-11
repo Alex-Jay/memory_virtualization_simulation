@@ -1,0 +1,5 @@
+version: 1.0.{build}
+image: Previous Ubuntu1804
+platform: x86
+build_script:
+- sh: make Makefile
