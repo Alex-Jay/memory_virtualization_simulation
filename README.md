@@ -2,6 +2,9 @@
 
 > In this project students are required to create an application which simulates the structures and  processes used by both an Operating System and a Central Processing Unit to implement memory virtualization for a 16 bit virtual address space which employs a page size of 256 bytes. The simulated system must make use of a single-level linear page table which is stored in the system’s simulated physical memory.
 
+### Current Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/9fwk65mjh2lgbr8j?svg=true)](https://ci.appveyor.com/project/Alex-Jay/memory-virtualization-simulaton)
+
 **Subject**: Operating Systems
 **Degree**: BSc. (Hons) Computer Science in Games Development
 
