@@ -10,7 +10,7 @@ OBJECTS	= dist/main.o\
 default: link
 
 link: $(OBJECTS)
-	$(CC) $? -o $(DISTDIR)/main
+	$(CC) $? -o $(DISTDIR)/main.sim
 
 $(DISTDIR)/main.o: main.c
 	$(CC) $(CFLAGS) main.c -o $(DISTDIR)/main.o
