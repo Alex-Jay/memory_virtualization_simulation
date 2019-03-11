@@ -19,4 +19,4 @@ $(DISTDIR)/utils.o: $(LIBDIR)/utils.c
 	$(CC) $(CFLAGS) $(LIBDIR)/utils.c -o $(DISTDIR)/utils.o
 
 clean:
-	rm -rf ./$(DISTDIR) && mkdir $(DISTDIR)
+	rm -rf ./$(DISTDIR) && mkdir $(DISTDIR) && touch ./$(DISTDIR)/.keep
