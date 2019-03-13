@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "lib/utils.h"
+#include "lib/constants.h"
 
 /*
 	CA Title: Memory Virtualization Simulation
@@ -20,9 +20,9 @@
 	[+]	Allocate block of memory sufficient to store bytes for the full
 			address space.
 
-	[]	Create a Page Table for a single process.
+	[+]	Create a Page Table for a single process.
 
-	[]	Randomly write between [2,048-bytes & 20,480-bytes] of data be-
+	[+]	Randomly write between [2,048-bytes & 20,480-bytes] of data be-
 			longing to the 'process' previously created.
 
 	[]	Write file to "/data/physical_memory.txt" which displays the
@@ -44,21 +44,22 @@
 			memory address in your system, in HEXIDECIMAL form.
 */
 
-typedef unsigned short uint8_t;
+typedef unsigned short ushort_t;
 
 int main()
 {
-	// 2^16 = 65536 bytes
-	const int PHYS_MEM_MALLOC_MAX = pow(2, 16);
-
 	// 16-bit address space
-	uint8_t *physical_memory = malloc(PHYS_MEM_MALLOC_MAX * sizeof(uint8_t));
+	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);
 
 	// Page Table Entry Count = 2^16 / 256 = 256 entries
 	// Page Table Size = 256 * 2 bytes = 512 bytes total
 	// Byte 0 - 511 = Page Table
+	// Every 2 bytes are a page table entires
+	ushort_t *page_table = malloc(PAGE_TABLE_SIZE);
 
-	printf("sizeof(physical_memory): %lu\n", sizeof(uint8_t));
+
+	printf("Random Number: %i\n", get_random_number());
+	printf("Available Frame Count: %i\n", get_available_physical_frames(PHYSICAL_MEMORY_SIZE, PAGE_TABLE_SIZE, 256) );
 
 	return 0;
 }

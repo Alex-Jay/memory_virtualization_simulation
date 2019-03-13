@@ -9,3 +9,6 @@
 
 # Ignore extention
 *.ingr
+
+# Visual Studio Code generated items
+/.vscode

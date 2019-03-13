@@ -1,6 +1,7 @@
-#ifndef _UTILSH
-#define _UTILSH
+#ifndef UTILSH
+#define UTILSH
 
-void my_func(int);
+int get_random_number();
+int get_available_physical_frames (int, int, int);
 
 #endif

@@ -1,15 +1,16 @@
 # Global Variables
-CC			= gcc
-CFLAGS	= -c #-Wall
-LIBDIR	= lib
-DISTDIR	= dist
-OBJECTS	= dist/main.o\
-		  		dist/utils.o\
+EXECNAME		=	main.sim
+CC				= 	gcc
+CFLAGS			= 	-c #-Wall
+LIBDIR			= 	lib
+DISTDIR			= 	dist
+BUILDOBJECTS	= 	$(DISTDIR)/main.o\
+					$(DISTDIR)/utils.o\
 
 # Use incremental build as default target
 default: link
 
-link: $(OBJECTS)
+link: $(BUILDOBJECTS)
 	$(CC) $? -o $(DISTDIR)/main.sim
 
 $(DISTDIR)/main.o: main.c
@@ -20,3 +21,6 @@ $(DISTDIR)/utils.o: $(LIBDIR)/utils.c
 
 clean:
 	rm -rf ./$(DISTDIR) && mkdir $(DISTDIR) && touch ./$(DISTDIR)/.keep
+
+run:
+	./$(DISTDIR)/main.sim
