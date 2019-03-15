@@ -1,6 +1,13 @@
 version: 1.0.{build}
 image: Previous Ubuntu1804
 platform: x86
+only_commits:
+  files:
+    - data/
+    - dist/
+    - lib/
+    - main.c
+    - Makefile
 build_script:
 - sh: >-
     ls
