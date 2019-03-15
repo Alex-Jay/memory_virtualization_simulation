@@ -25,7 +25,7 @@
 
 - Run the following command to launch the applciation after make
 ```bash
-<user>@<user>:~$ ./dist/main
+<user>@<user>:~$ make run
 ```
 
 ### Development
