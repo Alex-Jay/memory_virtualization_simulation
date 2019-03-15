@@ -47,7 +47,7 @@
 typedef unsigned short ushort_t;
 
 int main()
-{
+{ 
 	/* 16-bit address space */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);
 
