@@ -48,18 +48,54 @@ typedef unsigned short ushort_t;
 
 int main()
 {
-	// 16-bit address space
+	/* 16-bit address space */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);
 
-	// Page Table Entry Count = 2^16 / 256 = 256 entries
-	// Page Table Size = 256 * 2 bytes = 512 bytes total
-	// Byte 0 - 511 = Page Table
-	// Every 2 bytes are a page table entires
+	/* 
+		Page Table Entry Count = 2^16 / 256 = 256 entries
+		Page Table Size = 256 * 2 bytes = 512 bytes total
+		Byte 0 - 511 = Page Table
+		Every 2 bytes are a page table entires 
+	*/
 	ushort_t *page_table = malloc(PAGE_TABLE_SIZE);
 
+	int random_payload_size = get_random_payload_size();
+	int random_frame = get_random_physical_frame();
+	int random_physical_index = frame_to_physical_address(random_frame);
 
-	printf("Random Number: %i\n", get_random_number());
-	printf("Available Frame Count: %i\n", get_available_physical_frames(PHYSICAL_MEMORY_SIZE, PAGE_TABLE_SIZE, 256) );
+	printf("[Memory Configuration]\n");
+	printf (TABLE_HEADER_FORMAT, "Physical Memory", "Table Size", "Payload Size", "Frame Count", "Random Frame Index");
+	printf (TABLE_BODY_FORMAT, PHYSICAL_MEMORY_SIZE, PAGE_TABLE_SIZE, random_payload_size, get_available_physical_frame_count(), random_frame);
+	printf("\n\n");
+	printf("[Payload]\n");
+	
+	write_random_payload(physical_memory, random_payload_size, random_frame);
+
+	for(int i = random_physical_index; i < random_payload_size; ++i)
+	{
+		printf("[%i] %c\n", i, (char) physical_memory[i]);
+	}
+	
+
+	/*
+	printf("Total Physical Memory: %i bytes\n", PHYSICAL_MEMORY_SIZE);
+	printf("Page Table Size: %i bytes\n", PAGE_TABLE_SIZE);
+	printf("Random Payload Size: %i bytes\n", get_random_payload_size());
+	printf("Available Frame Count: %i frames\n", get_available_physical_frames() );
+
+	physical_memory[5] = (char) 74;
+
+	printf("Data @ physical_memory[5]: %c\n", (physical_memory[5]));
+
+	page_table[0] = (ushort_t) 0x0029;
+
+	printf("Address @ page_table[0]: %hu\n", (page_table[0]));
+
+	printf("Random Frame Index [2-256]: %i\n", get_available_random_physical_frame());
+	*/
+
+	free(page_table);
+	free(physical_memory);
 
 	return 0;
 }
