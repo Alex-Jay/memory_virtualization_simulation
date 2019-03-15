@@ -9,9 +9,9 @@
 **Degree**: BSc. (Hons) Computer Science in Games Development
 
 # Dependencies
+- **Ubuntu 18.04+**
 - **gcc**
-- **build-essential**
-- **make**
+- **CMake**
 
 ### Installation & Usage
 
