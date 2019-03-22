@@ -1,5 +1,10 @@
+#ifdef linux
+#include <unistd.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
@@ -16,7 +21,7 @@ void init_random_seed()
 }
 
 // Random Number Generator
-// Authod: Tutorials Point
+// Author: Tutorials Point
 // Source: https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
 int get_random_int(int min, int max)
 {
@@ -43,9 +48,53 @@ int get_random_ascii_index()
 	return get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
 }
 
-void init_page_table_entries(ushort_t* page_table)
+void init_page_table_entries(char* page_table)
 {
+	printf("%s - Initializing Empty Page Table...\n", INIT_PRINT_TAG);
+	for(int i = 0; i < PAGE_TABLE_SIZE; ++i)
+	{
+		/* Even -> Physical Frame Number */
+		if (i % 2 == 0)
+		{
+			page_table[i] = 0x0;
+		}
+		/* Odd -> Control Bits */
+		else
+		{
+			page_table[i] = 0x0;
+		}
+	}
+}
 
+/*================================== FILE I/O ==================================*/
+void write_data_to_file(const char *filepath, const char *data)
+{
+	printf("file_name: %s | data_buffer: %s", filepath, data);
+
+    FILE *fp = fopen(filepath, "ab");
+    if (fp != NULL)
+    {
+        fputs(data, fp);
+        fclose(fp);
+    }
+}
+
+// Source: http://www.codebind.com/cprogramming/get-current-directory-using-c-program/
+// Author: CodeBind Administrator (Name unknown)
+char* get_current_working_directory ()
+{
+	char buff[FILENAME_MAX + 1];
+	buff[FILENAME_MAX] = '\0';
+	getcwd( buff, FILENAME_MAX );
+
+	// Source: https://stackoverflow.com/questions/46190920/how-do-i-convert-a-char-array-to-a-string-in-c
+	// Author: [Hitsugaya198] - https://stackoverflow.com/users/4636686/hitsugaya198
+	char* string;
+	string = malloc(sizeof(buff)+1);
+	memset(&string[0], 0x00, sizeof(buff)+1);
+	memcpy(&string[0], &buff[0], sizeof(buff));
+
+	return string;
 }
 
 /*================================= OPERATIONAL ================================*/

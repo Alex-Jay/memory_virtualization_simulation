@@ -1,8 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <string.h>
 #include "lib/utils.h"
 #include "lib/constants.h"
+
+#ifdef _WIN32
+	#define PRINT_OS() (printf("%s\n", "WINDOWS"))
+#elif defined _WIN64
+	#define PRINT_OS() (printf("%s\n", "WINDOWS"))
+#elif defined __linux__
+	#include <unistd.h>
+	#define PRINT_OS() (printf("%s\n", "LINUX"))
+#endif
 
 /*
 	CA Title: Memory Virtualization Simulation
@@ -47,13 +57,17 @@
 
 int main()
 {
-	setlocale(LC_NUMERIC, "");
+	setlocale(LC_NUMERIC, "");										/* Enable digit padding. i.e. 100000 => 100,000 */
+	//char* WORKING_DIRECTORY = get_current_working_directory();
+	char* MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
+	char* PAGE_TABLE_FILE_PATH = strcat(get_current_working_directory(), "/data/page_table.txt");
 
 	/*=============================== Initialization ===============================*/
 	clear_console();												/* Clear console depending on operating system */
 	init_random_seed();												/* Initialize random seed */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
-	ushort_t *page_table = malloc(PAGE_TABLE_SIZE);					/* 512 bytes. 2 bytes per entry. 256 entries */
+	char *disk_memory = malloc(PAGE_TABLE_SIZE);					/* Simulation of DISK memory */
+	char *page_table = malloc(PAGE_TABLE_SIZE);						/* 512 bytes. 2 bytes per entry. 256 entries */
 
 	/*=============================== Random Selection =============================*/
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
@@ -67,9 +81,17 @@ int main()
 	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, random_payload_size, physical_address);
 
+	//write_data_to_file("/media/sf_server/text.txt", "HELLO WORLD");
+
+	printf("PHYSICAL MEMORY PATH: %s\n", MEMORY_FILE_PATH);
+	printf("PAGE TABLE PATH: %s\n", PAGE_TABLE_FILE_PATH);
+
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
+	// free(PAGE_TABLE_FILE_PATH);
+	// free(MEMORY_FILE_PATH);
 	free(page_table);
+	free(disk_memory);
 	free(physical_memory);
 
 	return 0;

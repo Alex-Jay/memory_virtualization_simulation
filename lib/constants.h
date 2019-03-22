@@ -11,6 +11,7 @@
 #define C_NONE_7			(1 << 7)
 
 static int PHYSICAL_MEMORY_SIZE     = 65536;
+static int DISK_MEMORY_SIZE         = 512;     // CA requires 2 items added to disk [Restrict memory to 2 frames]
 static int PAGE_TABLE_SIZE          = 512;
 static int PAGE_SIZE                = 256;
 static int FRAME_COUNT              = 256;

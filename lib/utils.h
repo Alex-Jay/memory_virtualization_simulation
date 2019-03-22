@@ -8,7 +8,11 @@ void init_random_seed();
 int get_random_int(int min, int max);
 int get_random_payload_size();
 int get_random_ascii_index();
-void init_page_table_entries(ushort_t* page_table);
+void init_page_table_entries(char* page_table);
+
+// File I/O
+void write_data_to_file(const char *filepath, const char *data);
+char* get_current_working_directory ();
 
 // Operational
 void write_random_payload(char* physical_memory, int payload_size, int physical_address);
