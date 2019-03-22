@@ -20,8 +20,10 @@ static int PAYLOAD_UPPER_BOUNDS     = 4096; // TODO: Change the value back befor
 static int ASCII_MIN_RANGE          = 33;
 static int ASCII_MAX_RANGE          = 127;
 
-static char TABLE_HEADER_FORMAT[]   = "%15s%15s%15s%15s%20s\n";
-static char TABLE_BODY_FORMAT[]     = "%15d%15d%15d%15d%20d\n";
+static char INIT_PRINT_TAG[]        = "[System.Init]";
+static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%d (bytes)\nTable Size:\t\t%d (bytes)\nPayload Size:\t\t%d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t%d\n";
+static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";
+static char TABLE_PAYLOAD_HEADER[]  = "======================= [Payload] ==========================\n";
 
 /*
     Appendix:

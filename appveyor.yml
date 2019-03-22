@@ -13,5 +13,3 @@ build_script:
     ls
 
     make
-test_script:
-- sh: ./dist/main.sim
