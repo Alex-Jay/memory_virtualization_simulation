@@ -47,34 +47,53 @@
 typedef unsigned short ushort_t;
 
 int main()
-{ 
+{
+	// Initialize random seed
+	init_random();
+
 	/* 16-bit address space */
+	/* Allocate on Heap */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);
 
 	/* 
 		Page Table Entry Count = 2^16 / 256 = 256 entries
 		Page Table Size = 256 * 2 bytes = 512 bytes total
 		Byte 0 - 511 = Page Table
-		Every 2 bytes are a page table entires 
+		Every 2 bytes is a page table entry
 	*/
+	/* Allocate on Heap */
 	ushort_t *page_table = malloc(PAGE_TABLE_SIZE);
 
 	int random_payload_size = get_random_payload_size();
 	int random_frame = get_random_physical_frame();
 	int random_physical_index = frame_to_physical_address(random_frame);
 
-	printf("[Memory Configuration]\n");
-	printf (TABLE_HEADER_FORMAT, "Physical Memory", "Table Size", "Payload Size", "Frame Count", "Random Frame Index");
+	printf ("[Memory Configuration]\n");
+	printf (TABLE_HEADER_FORMAT, "Physical Memory", "Table Size", "Payload Size", "Frame Count", "Random Frame");
 	printf (TABLE_BODY_FORMAT, PHYSICAL_MEMORY_SIZE, PAGE_TABLE_SIZE, random_payload_size, get_available_physical_frame_count(), random_frame);
-	printf("\n\n");
-	printf("[Payload]\n");
+	printf ("\n\n");
+	printf ("[Payload]\n");
 	
-	write_random_payload(physical_memory, random_payload_size, random_frame);
+	//write_random_payload(physical_memory, random_payload_size, random_frame);
 
-	for(int i = random_physical_index; i < random_payload_size; ++i)
+	int physical_bytes = frame_to_physical_address(random_frame);
+
+	//physical_memory[physical_bytes] = (char) 65;
+	//printf( "Frame #%i | Bytes -> %i: %c\n", random_frame, physical_bytes, (char) physical_memory[physical_bytes]);
+
+	for(int i = physical_bytes; i < (physical_bytes + random_payload_size) - 1; ++i)
 	{
-		printf("[%i] %c\n", i, (char) physical_memory[i]);
+		//int rand_ascii_int = get_random_ascii_index();
+		//printf ("Random ASCII int: %i, ", rand_ascii_int);
+		//printf ("Random ASCII int: %i\n", rand_ascii_int);
+		//printf("ASCII int: %i | Random char: %c\n", rand_ascii_int, ((char) rand_ascii_int));
+		//physical_memory[i] = (char) rand_ascii_int;
 	}
+
+	// for(int i = random_physical_index; i < random_payload_size; ++i)
+	// {
+	// 	printf("[%i] %c\n", i, (char) physical_memory[i]);
+	// }
 	
 
 	/*

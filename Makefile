@@ -8,7 +8,7 @@ BUILDOBJECTS	= 	$(DISTDIR)/main.o\
 					$(DISTDIR)/utils.o\
 
 # Use incremental build as default target
-default: link
+default: run
 
 link: $(BUILDOBJECTS)
 	$(CC) $? -o $(DISTDIR)/main.sim
@@ -22,5 +22,5 @@ $(DISTDIR)/utils.o: $(LIBDIR)/utils.c
 clean:
 	rm -rf ./$(DISTDIR) && mkdir $(DISTDIR) && touch ./$(DISTDIR)/.keep
 
-run:
+run: link
 	./$(DISTDIR)/main.sim

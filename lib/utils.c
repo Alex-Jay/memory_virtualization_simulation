@@ -4,6 +4,12 @@
 #include "constants.h"
 #include "utils.h"
 
+void init_random()
+{
+	printf("[System] - Initializing Random Generator Seed...\n");
+	srand(time(NULL));
+}
+
 // Random Number Generator
 // Authod: Tutorials Point
 // Source: https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
@@ -23,19 +29,21 @@ int get_random_int(int min, int max)
 
 int get_random_payload_size()
 {
+	printf("[System] - Generating random payload size...\n");
 	if (PAYLOAD_UPPER_BOUNDS == PAYLOAD_LOWER_BOUNDS)
 		return 0;
 	else
 		return get_random_int(PAYLOAD_LOWER_BOUNDS, PAYLOAD_UPPER_BOUNDS);
 }
 
-char get_random_char()
+int get_random_ascii_index()
 {
-	return (char) get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
+	return get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
 }
 
 void write_random_payload(char* physical_memory, int payload_size, int start_frame)
 {
+	printf("[System] - Writing random payload to physical memory...\n");
 	int physical_bytes = frame_to_physical_address(start_frame);
 
 	if (physical_memory == NULL)
@@ -43,7 +51,7 @@ void write_random_payload(char* physical_memory, int payload_size, int start_fra
 
 	for(int i = physical_bytes; i < payload_size - 1; ++i)
 	{
-		physical_memory[i] = get_random_char();
+		physical_memory[i] = (char) get_random_ascii_index();
 	}
 
 	// Null terminator
@@ -52,6 +60,7 @@ void write_random_payload(char* physical_memory, int payload_size, int start_fra
 
 int get_random_physical_frame ()
 {
+	printf("[System] - Retrieving random physical frame...\n");
 	// Example: 256 frames - 254 frames = 2 frames [Frame 0-1: Page Table]
 	int min = FRAME_COUNT - get_available_physical_frame_count();
 	int max = FRAME_COUNT;
@@ -61,6 +70,7 @@ int get_random_physical_frame ()
 
 int get_available_physical_frame_count ()
 {
+	printf("[System] - Retrieving avaiable physical frames...\n");
 	if (PAGE_TABLE_SIZE < 0)
 		return 0;
 
@@ -70,6 +80,7 @@ int get_available_physical_frame_count ()
 
 int frame_to_physical_address (int frame_number)
 {
+	printf("[System] - Converting frame to physical address...\n");
 	// Example: 0 * 256 = 0
 	// Example: 1 * 256 = 256
 	// Example: 2 * 256 = 512
