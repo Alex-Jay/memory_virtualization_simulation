@@ -15,13 +15,14 @@ static int PAGE_TABLE_SIZE          = 512;
 static int PAGE_SIZE                = 256;
 static int FRAME_COUNT              = 256;
 static int PAYLOAD_LOWER_BOUNDS     = 2048;
-static int PAYLOAD_UPPER_BOUNDS     = 4096; // TODO: Change the value back before upload
-//static const int PAYLOAD_UPPER_BOUNDS     = 20480;
+//static int PAYLOAD_UPPER_BOUNDS     = 4096; // TODO: Change the value back before upload
+static int PAYLOAD_UPPER_BOUNDS     = 20480;
 static int ASCII_MIN_RANGE          = 33;
 static int ASCII_MAX_RANGE          = 127;
 
 static char INIT_PRINT_TAG[]        = "[System.Init]";
-static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%d (bytes)\nTable Size:\t\t%d (bytes)\nPayload Size:\t\t%d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t%d\n";
+static char CORE_PRINT_TAG[]        = "[System.Core]";
+static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nTable Size:\t\t%d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t#%d\n";
 static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";
 static char TABLE_PAYLOAD_HEADER[]  = "======================= [Payload] ==========================\n";
 

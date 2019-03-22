@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "lib/utils.h"
 #include "lib/constants.h"
 
@@ -44,32 +45,29 @@
 			memory address in your system, in HEXIDECIMAL form.
 */
 
-typedef unsigned short ushort_t;
-
 int main()
-	/*=============================== Initialization ===============================*/
 {
+	setlocale(LC_NUMERIC, "");
+
+	/*=============================== Initialization ===============================*/
 	clear_console();												/* Clear console depending on operating system */
 	init_random_seed();												/* Initialize random seed */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
 	ushort_t *page_table = malloc(PAGE_TABLE_SIZE);					/* 512 bytes. 2 bytes per entry. 256 entries */
+
+	/*=============================== Random Selection =============================*/
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
 	int random_frame = get_random_physical_frame();					/* Retrieve a random frame [Excluding first 2 frames - Page Table] */
 	int physical_address = frame_to_physical_address(random_frame);	/* Convert random frame to physical address */
+	init_page_table_entries(page_table);							/* Initialize page table entries */
+
+	/*================================= Debugging ==================================*/
 	print_mem_config(random_payload_size, random_frame);			/* Print initialized values */
 
-	// Print payload Header
-	//print_payload();
-
-	// Write random data (random size) to a random frame
+	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, random_payload_size, physical_address);
 
-	// Display all writte bytes
-	// for(int i = physical_address; i < (physical_address + random_payload_size); ++i)
-	// {
-	// 	printf("[%i] %c\n", i, (char) physical_memory[i]);
-	// }
-
+	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
 	free(page_table);
 	free(physical_memory);

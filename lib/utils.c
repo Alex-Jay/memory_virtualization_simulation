@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <time.h>
 #include "constants.h"
 #include "utils.h"
 
+/*=============================== INITIALIZATION ===============================*/
 void init_random_seed()
 {
 	printf("%s - Initializing Random Generator Seed...\n", INIT_PRINT_TAG);
@@ -41,10 +43,16 @@ int get_random_ascii_index()
 	return get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
 }
 
+void init_page_table_entries(ushort_t* page_table)
+{
+
+}
+
+/*================================= OPERATIONAL ================================*/
 void write_random_payload(char* physical_memory, int payload_size, int physical_address)
 {
 	print_payload();
-	printf("%s - Writing Random Payload to Physical Memory...\n", INIT_PRINT_TAG);
+	printf("%s - Writing Random Payload to Physical Memory...\n", CORE_PRINT_TAG);
 
 	if (physical_memory == NULL)
 		return;
@@ -54,7 +62,11 @@ void write_random_payload(char* physical_memory, int payload_size, int physical_
 		physical_memory[i] = (char) get_random_ascii_index();
 	}
 
-	printf("%s - Wrote bytes - %i (bytes)\n", INIT_PRINT_TAG, payload_size);
+	int frame_count = floor(payload_size / PAGE_SIZE);
+
+	printf("Starting Frame:\t\t#%i\n", (physical_address/PAGE_SIZE));
+	printf("Wrote Bytes:\t\t%'i (bytes)\n", payload_size);
+	printf("Frames Occupied:\t%i (frames)\n", frame_count);
 
 	print_header_end('=', strlen(TABLE_PAYLOAD_HEADER));
 
@@ -90,6 +102,7 @@ int frame_to_physical_address (int frame_number)
 	return frame_number * PAGE_SIZE;
 }
 
+/*================================== DEBUGGING =================================*/
 void print_mem_config(int payload_size, int frame)
 {
 	printf ("\n%s", TABLE_MEMORY_HEADER);
