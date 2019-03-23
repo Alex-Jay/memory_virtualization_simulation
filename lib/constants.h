@@ -7,10 +7,10 @@
 #define C_READWRITE 		(1 << 1)
 #define C_DIRTY				(1 << 2)	
 #define C_DISK   			(1 << 3)
-//#define C_ACCESSED		(1 << 4)
-//#define C_CACHEDISABLED	(1 << 5)
-//#define C_NONE_6 			(1 << 6)
-//#define C_NONE_7			(1 << 7)
+#define C_ACCESSED		    (1 << 4)
+#define C_CACHEDISABLED	    (1 << 5)
+#define C_NONE_6 			(1 << 6)
+#define C_NONE_7			(1 << 7)
 
 static int PHYSICAL_MEMORY_SIZE     = 65536;
 static int DISK_MEMORY_SIZE         = 512;     // CA requires 2 items added to disk [Restrict memory to 2 frames]
@@ -33,20 +33,21 @@ static char SEGMENT_PRINT_TAG[]     = "[System.Segmentation]";
 static char DISK_PRINT_TAG[]        = "[System.Swapping]";
 static char TRANSLATION_PRINT_TAG[] = "[System.Translation]";
 
-/* Printf formatting */
+/* printf Formatting */
 static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t0x%02x\n";
+// Source: https://stackoverflow.com/questions/3649026/how-to-display-hexadecimal-numbers-in-c
+// Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
+static char TABLE_PHYSICAL_MEMORY[] = "0x%02X\t\t| %-3i\t\t| %-3c\r\n";
+static char TABLE_PAGE_TABLE[]      = "0x%02X\t| 0x%02X\t\t\t| %-3i\t\t| %-3i\t\t| %-3i\t\t| %-3i\r\n";
+
+/* printf Headers*/
 static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";
 static char TABLE_PAYLOAD_HEADER[]  = "======================= [Payload] ==========================\n";
 static char TABLE_P_ENTRY_EXAMPLE[] = "\n================================ Example Page Table Entry ================================\n";
 static char TABLE_TRSLT_HEADER[]    = "======================= [VP/PF Translation] ==========================\n";
+static char TABLE_FRAME_HEADER[]    = "\n================ Physical Memory ================\n";
 static char TABLE_PHYSICAL_HEADER[] = "%-3s\t\t| %-3s\t\t| %-3s\r\n";
 static char TABLE_PAGE_HEADER[]     = "%-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\r\n";
-
-// Source: https://stackoverflow.com/questions/3649026/how-to-display-hexadecimal-numbers-in-c
-// Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
-static char TABLE_PHYSICAL_MEMORY[] = "0x%-3X\t\t| %-3i\t\t| %-3c\r\n";
-
-static char TABLE_PAGE_TABLE[]      = "0x%-3X\t| 0x%-3X\t\t\t| %-3i\t\t| %-3i\t\t| %-3i\t\t| %-3i\r\n";
 
 /*
     Appendix:

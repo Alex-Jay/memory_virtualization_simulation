@@ -69,14 +69,15 @@ int main()
 	/*=============================== Initialization ===============================*/
 	clear_console();												/* Clear console depending on operating system */
 	init_random_seed();												/* Initialize random seed */
-	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
-	char *disk_memory = malloc(DISK_MEMORY_SIZE);					/* Simulation of DISK memory */
+	char *physical_memory 	= malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
+	char *disk_memory 		= malloc(DISK_MEMORY_SIZE);				/* Simulation of DISK memory */
 
 	/*=============================== Random Selection =============================*/
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
-	int random_frame = get_random_physical_frame();					/* Retrieve a random frame [Excluding first 2 frames - Page Table] */
+	int random_frame 		= get_random_physical_frame();			/* Retrieve a random frame [Excluding first 2 frames - Page Table] */
 	int physical_address = frame_to_physical_address(random_frame);	/* Convert random frame to physical address */
 	init_page_table_entries(physical_memory);						/* Initialize page table entries */
+	init_disk_entries(disk_memory);									/* Initialize disk memory block */
 
 	/*================================= Debugging ==================================*/
 	print_mem_config(random_payload_size, random_frame);			/* Print initialized values */
@@ -90,10 +91,11 @@ int main()
 
 	while(is_running == 1)
 	{
-		unsigned int input_address;
+		unsigned short input_address;
 
-		printf("Enter a Virtual Page Number [Max. 16-bits]:\n");
-		scanf("%X", &input_address);
+		printf("Enter a Virtual Page Number [Enter any Hex between 0x0000 -> 0xFFFF]:\n");
+		scanf("%hX", &input_address);
+		printf("\n");
 		
 		print_physical_frame(physical_memory, input_address);
 	}
