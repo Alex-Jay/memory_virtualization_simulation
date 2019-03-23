@@ -8,6 +8,30 @@
 **Subject**: Operating Systems
 **Degree**: BSc. (Hons) Computer Science in Games Development
 
+# Architecture
+**Physical Memory**: 0 - 65,535 bytes
+**Disk Memory**: 0 - 511 bytes ***[Not fully functional]***
+**Page Table** : 0 - 511 bytes
+**Page Table Entry**: Byte for Physical Frame Number & Byte for Control Bits, Overall 2 bytes.
+**Control Bits**: 
+- *C_PRESENT*
+- *C_READWRITE*
+- *C_DIRTY*
+- *C_DISK*
+- *C_ACCESSED*
+- *C_CACHEDISABLED*
+- *C_NONE_6*
+- *C_NONE_7*
+
+# Usage
+In terminal:
+```bash
+<user>@<user>:~$ cd dir
+<user>@<user>:~$ make clean
+<user>@<user>:~$ make run
+<user>@<user>:~$ *[Inputs from 0x0000 -> 0xFFFF]*
+```
+
 # Dependencies
 - **Ubuntu 18.04+**
 - **gcc**
