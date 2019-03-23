@@ -1,14 +1,16 @@
 #ifndef CONSTANTSH
 #define CONSTANTSH
 
+// Source: https://www.youtube.com/watch?v=q5GcA0m8q_Q&t=878s
+// Author: [javidx9] - https://www.youtube.com/channel/UC-yuWVUplUJZvieEligKBkA
 #define C_PRESENT 			(1 << 0)
 #define C_READWRITE 		(1 << 1)
-#define C_USER 				(1 << 2)	
-#define C_DIRTY 			(1 << 3)
-#define C_ACCESSED			(1 << 4)
-#define C_CACHEDISABLED		(1 << 5)
-#define C_NONE_6 			(1 << 6)
-#define C_NONE_7			(1 << 7)
+#define C_DIRTY				(1 << 2)	
+#define C_DISK   			(1 << 3)
+//#define C_ACCESSED		(1 << 4)
+//#define C_CACHEDISABLED	(1 << 5)
+//#define C_NONE_6 			(1 << 6)
+//#define C_NONE_7			(1 << 7)
 
 static int PHYSICAL_MEMORY_SIZE     = 65536;
 static int DISK_MEMORY_SIZE         = 512;     // CA requires 2 items added to disk [Restrict memory to 2 frames]

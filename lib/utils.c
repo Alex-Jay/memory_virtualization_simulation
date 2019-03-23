@@ -11,6 +11,9 @@
 #include "constants.h"
 #include "utils.h"
 
+int page_table_page_counter 	= 0;
+int physical_frame_counter		= 0;
+
 /*=============================== INITIALIZATION ===============================*/
 void init_random_seed()
 {
@@ -48,7 +51,7 @@ int get_random_ascii_index()
 	return get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
 }
 
-void init_page_table_entries(char* page_table)
+void init_page_table_entries(char* physical_memory)
 {
 	printf("%s - Initializing Empty Page Table...\n", INIT_PRINT_TAG);
 	for(int i = 0; i < PAGE_TABLE_SIZE; ++i)
@@ -56,12 +59,12 @@ void init_page_table_entries(char* page_table)
 		/* Even -> Physical Frame Number */
 		if (i % 2 == 0)
 		{
-			page_table[i] = 0x0;
+			physical_memory[i] = 0x00;
 		}
 		/* Odd -> Control Bits */
 		else
 		{
-			page_table[i] = 0x0;
+			physical_memory[i] = 0x00;
 		}
 	}
 }
@@ -116,7 +119,7 @@ void write_random_payload(char* physical_memory, int payload_size, int start_add
 	int end_frame				= start_frame + payload_in_frames;
 	int out_of_bounds_delta 	= end_frame - FRAME_COUNT;
 
-	if ((start_frame + payload_in_frames) >= FRAME_COUNT)
+	if (end_frame >= FRAME_COUNT)
 	{
 		int move_back_frames = out_of_bounds_delta + OOR_FRAME_OFFSET;
 
@@ -131,7 +134,23 @@ void write_random_payload(char* physical_memory, int payload_size, int start_add
 
 	/* Write to physical memory */
 	for(int i = start_address; i < (start_address + payload_size); ++i)
-	{
+	{		
+		// If [i] is the start of a frame
+		if (i % PAGE_SIZE == 0)
+		{
+			unsigned char control_bits = 0x00;				/* Reset every frame */
+			unsigned char current_frame = (unsigned char) (i / PAGE_SIZE);
+
+			if	(physical_frame_counter < (payload_in_frames - 1))
+				control_bits |= C_PRESENT | C_READWRITE;	/* Set flags to true */
+			else
+				control_bits |= C_READWRITE | C_DISK;		/* Set DISK flag to true */
+
+			write_page_table_entry(physical_memory, current_frame, control_bits);
+
+			physical_frame_counter++;
+		}
+
 		physical_memory[i] = (char) get_random_ascii_index();
 	}
 
@@ -143,6 +162,15 @@ void write_random_payload(char* physical_memory, int payload_size, int start_add
 
 	// Null terminator
 	//physical_memory[payload_size] = '\0';
+}
+
+void write_page_table_entry(char* physical_memory, unsigned char frame_number, unsigned char control_bits)
+{
+	// Write 2 bytes for page table entry
+	physical_memory[page_table_page_counter] = frame_number;
+	physical_memory[page_table_page_counter + 1] = control_bits;
+
+	page_table_page_counter += 2;
 }
 
 int get_random_physical_frame ()

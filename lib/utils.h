@@ -8,7 +8,7 @@ void init_random_seed();
 int get_random_int(int min, int max);
 int get_random_payload_size();
 int get_random_ascii_index();
-void init_page_table_entries(char* page_table);
+void init_page_table_entries(char* physical_memory);
 
 // File I/O
 void write_data_to_file(const char *filepath, const char *data);
@@ -16,6 +16,7 @@ char* get_current_working_directory ();
 
 // Operational
 void write_random_payload(char* physical_memory, int payload_size, int start_address);
+void write_page_table_entry(char* physical_memory, unsigned char frame_number, unsigned char control_bits);
 int get_random_physical_frame();
 int get_available_physical_frame_count();
 int frame_to_physical_address(int frame_number);

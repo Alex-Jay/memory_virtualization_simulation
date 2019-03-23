@@ -58,7 +58,6 @@
 int main()
 {
 	setlocale(LC_NUMERIC, "");										/* Enable digit padding. i.e. 100000 => 100,000 */
-	//char* WORKING_DIRECTORY = get_current_working_directory();
 	char* MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
 	char* PAGE_TABLE_FILE_PATH = strcat(get_current_working_directory(), "/data/page_table.txt");
 
@@ -67,13 +66,13 @@ int main()
 	init_random_seed();												/* Initialize random seed */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
 	char *disk_memory = malloc(PAGE_TABLE_SIZE);					/* Simulation of DISK memory */
-	char *page_table = malloc(PAGE_TABLE_SIZE);						/* 512 bytes. 2 bytes per entry. 256 entries */
+	//char *page_table = malloc(PAGE_TABLE_SIZE);					/* 512 bytes. 2 bytes per entry. 256 entries */
 
 	/*=============================== Random Selection =============================*/
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
 	int random_frame = get_random_physical_frame();					/* Retrieve a random frame [Excluding first 2 frames - Page Table] */
 	int physical_address = frame_to_physical_address(random_frame);	/* Convert random frame to physical address */
-	init_page_table_entries(page_table);							/* Initialize page table entries */
+	init_page_table_entries(physical_memory);							/* Initialize page table entries */
 
 	/*================================= Debugging ==================================*/
 	print_mem_config(random_payload_size, random_frame);			/* Print initialized values */
@@ -83,14 +82,17 @@ int main()
 
 	//write_data_to_file(MEMORY_FILE_PATH, "HELLO WORLD");
 
-	printf("PHYSICAL MEMORY PATH: %s\n", MEMORY_FILE_PATH);
-	printf("PAGE TABLE PATH: %s\n", PAGE_TABLE_FILE_PATH);
+	//printf("PHYSICAL MEMORY PATH: %s\n", MEMORY_FILE_PATH);
+	//printf("PAGE TABLE PATH: %s\n", PAGE_TABLE_FILE_PATH);
 
+	// Source: https://stackoverflow.com/questions/3649026/how-to-display-hexadecimal-numbers-in-c
+	// Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
+	//printf("HEX: 0x%02x", 16);
+	
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
-	// free(PAGE_TABLE_FILE_PATH);
-	// free(MEMORY_FILE_PATH);
-	free(page_table);
+	free(PAGE_TABLE_FILE_PATH);
+	free(MEMORY_FILE_PATH);
 	free(disk_memory);
 	free(physical_memory);
 
