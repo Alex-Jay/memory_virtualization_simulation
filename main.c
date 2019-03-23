@@ -40,11 +40,11 @@
 			contents of your simulation of physical memory in linear &
 			readable form. (Label which addresses are & are not used.
 
-	[]	Write file to "/data/page_table.txt" which displays the
+	[+]	Write file to "/data/page_table.txt" which displays the
 			contents of your simulated page table in linear, readable
 			form.
 
-	[]	Add 2 entries to the Page Table which points to pages which
+	[+]	Add 2 entries to the Page Table which points to pages which
 			are not stored in your simulated physical memory (Swapping),
 			store content for these pages in "/data" folder.
 
@@ -65,8 +65,7 @@ int main()
 	clear_console();												/* Clear console depending on operating system */
 	init_random_seed();												/* Initialize random seed */
 	char *physical_memory = malloc(PHYSICAL_MEMORY_SIZE);			/* 16-bit address space */
-	char *disk_memory = malloc(PAGE_TABLE_SIZE);					/* Simulation of DISK memory */
-	//char *page_table = malloc(PAGE_TABLE_SIZE);					/* 512 bytes. 2 bytes per entry. 256 entries */
+	char *disk_memory = malloc(DISK_MEMORY_SIZE);					/* Simulation of DISK memory */
 
 	/*=============================== Random Selection =============================*/
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
@@ -78,9 +77,15 @@ int main()
 	print_mem_config(random_payload_size, random_frame);			/* Print initialized values */
 
 	/*=================================== Core =====================================*/
-	write_random_payload(physical_memory, random_payload_size, physical_address);
-	write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
-	write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
+	write_random_payload(physical_memory, disk_memory, random_payload_size, physical_address);
+	//write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
+	//write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
+
+	for(int i = 0; i < DISK_MEMORY_SIZE; ++i)
+	{
+		printf("[Disk] - #%i -> %i\n", i, disk_memory[i]);
+	}
+	
 
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap

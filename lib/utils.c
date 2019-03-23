@@ -1,7 +1,6 @@
-#ifdef linux
-#include <unistd.h>
+#ifdef  __linux__
+	#include <unistd.h>
 #endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -13,6 +12,7 @@
 
 int page_table_page_counter 	= 0;
 int physical_frame_counter		= 0;
+int disk_frame_counter			= 0;
 
 /*=============================== INITIALIZATION ===============================*/
 void init_random_seed()
@@ -142,7 +142,7 @@ char* get_current_working_directory ()
 }
 
 /*================================= OPERATIONAL ================================*/
-void write_random_payload(char* physical_memory, int payload_size, int start_address)
+void write_random_payload(char* physical_memory, char* disk_memory, int payload_size, int start_address)
 {
 	print_payload_header();
 
@@ -182,12 +182,24 @@ void write_random_payload(char* physical_memory, int payload_size, int start_add
 			unsigned char control_bits = 0x00;				/* Reset every frame */
 			unsigned char current_frame = (unsigned char) (i / PAGE_SIZE);
 
+			/* All frames */
 			if	(physical_frame_counter < (payload_in_frames - 1))
-				control_bits |= C_PRESENT | C_READWRITE;	/* Set flags to true */
+			{
+				control_bits |= C_PRESENT | C_READWRITE;	/* Set current flags to true */
+				write_page_table_entry(physical_memory, current_frame, control_bits);
+			}
+			/* 2 last frames */
 			else
+			{
 				control_bits |= C_READWRITE | C_DISK;		/* Set DISK flag to true */
 
-			write_page_table_entry(physical_memory, current_frame, control_bits);
+				write_page_table_entry(physical_memory, disk_frame_counter, control_bits);
+				// TODO: Fix DISK swapping, memory management
+				// Couldn't get past a bug, was running out of time
+				//write_disk_entry(physical_memory, disk_memory, i);
+
+				disk_frame_counter++;
+			}
 
 			physical_frame_counter++;
 		}
@@ -212,6 +224,54 @@ void write_page_table_entry(char* physical_memory, unsigned char frame_number, u
 	physical_memory[page_table_page_counter + 1] = control_bits;
 
 	page_table_page_counter += 2;
+}
+
+void write_disk_entry(char* physical_memory, char* disk_memory, int current_address)
+{
+	printf("%s - Writing To DISK...\n", CORE_PRINT_TAG);
+
+	/* Iterate physical memory */
+	for(int i = current_address; i < (current_address + PAGE_SIZE); ++i)
+	{
+		//disk_memory[page_byte_counter] = physical_memory[i];
+
+		/* Hardcode DISK frames */
+		if (disk_frame_counter == 0)
+		{
+			//memcpy( &disk_memory[0], &physical_memory[0], PAGE_SIZE * sizeof(char) );
+
+			// /* Iterate DISK memory */
+			// for(int j = 0; j < PAGE_SIZE; ++j)
+			// {
+			// 	/* Store frame data on DISK */
+			// 	disk_memory[j] = &physical_memory[i];
+			// 	//printf("[%i]: [PM DATA] -> %i\n", j, physical_memory[i]);
+			// }
+			//memcpy(&disk_memory[0], &physical_memory[current_address], PAGE_SIZE * sizeof(char));
+			memcpy(&disk_memory[0], &physical_memory[current_address], PAGE_SIZE);
+
+			/* Clear frame in physical memory */
+			physical_memory[i] = 0x00;
+		}
+		else
+		{
+			//memcpy( &disk_memory[PAGE_SIZE], &physical_memory[PAGE_SIZE], PAGE_SIZE * sizeof(char) );
+			
+			// /* Iterate DISK memory */
+			// for(int j = PAGE_SIZE; j < DISK_MEMORY_SIZE; ++j)
+			// {
+			// 	/* Store frame data on DISK */
+			// 	disk_memory[j] = physical_memory[i];
+			// 	//printf("[%i]: [PM DATA] -> %c\n", j, physical_memory[i]);
+			// }
+
+			memcpy(&disk_memory[PAGE_SIZE], &physical_memory[current_address], PAGE_SIZE);
+			//memcpy(&disk_memory[PAGE_SIZE], &physical_memory[current_address], PAGE_SIZE * sizeof(char));
+
+			/* Clear frame in physical memory */
+			physical_memory[i] = 0x01;
+		}
+	}
 }
 
 int get_random_physical_frame ()
@@ -251,7 +311,7 @@ int physical_address_to_frame (int physical_address)
 void print_mem_config(int payload_size, int frame)
 {
 	printf ("\n%s", TABLE_MEMORY_HEADER);
-	printf (TABLE_BODY_FORMAT, PHYSICAL_MEMORY_SIZE, PAGE_TABLE_SIZE, payload_size, get_available_physical_frame_count(), frame);
+	printf (TABLE_BODY_FORMAT, PHYSICAL_MEMORY_SIZE, payload_size, get_available_physical_frame_count(), frame);
 	print_header_end ('=', strlen(TABLE_MEMORY_HEADER));
 }
 

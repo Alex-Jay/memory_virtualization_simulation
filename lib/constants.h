@@ -30,7 +30,7 @@ static char ERROR_PRINT_TAG[]       = "[System.Error]";
 static char SEGMENT_PRINT_TAG[]     = "[System.Segmentation]";
 
 /* Printf formatting */
-static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nTable Size:\t\t%d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t#%d\n";
+static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t#%d\n";
 static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";
 static char TABLE_PAYLOAD_HEADER[]  = "======================= [Payload] ==========================\n";
 static char TABLE_PHYSICAL_HEADER[] = "%-3s\t| %-3s\t| %-3s\r\n";

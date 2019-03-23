@@ -16,8 +16,9 @@ void write_page_table_to_file(char* physical_memory, const char *file_path);
 char* get_current_working_directory ();
 
 // Operational
-void write_random_payload(char* physical_memory, int payload_size, int start_address);
+void write_random_payload(char* physical_memory, char* disk_memory, int payload_size, int start_address);
 void write_page_table_entry(char* physical_memory, unsigned char frame_number, unsigned char control_bits);
+void write_disk_entry(char* physical_memory, char* disk_memory, int current_address);
 int get_random_physical_frame();
 int get_available_physical_frame_count();
 int frame_to_physical_address(int frame_number);
