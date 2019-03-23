@@ -81,7 +81,7 @@ int main()
 	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, random_payload_size, physical_address);
 
-	//write_data_to_file("/media/sf_server/text.txt", "HELLO WORLD");
+	//write_data_to_file(MEMORY_FILE_PATH, "HELLO WORLD");
 
 	printf("PHYSICAL MEMORY PATH: %s\n", MEMORY_FILE_PATH);
 	printf("PAGE TABLE PATH: %s\n", PAGE_TABLE_FILE_PATH);

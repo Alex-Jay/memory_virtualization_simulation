@@ -15,14 +15,14 @@ void write_data_to_file(const char *filepath, const char *data);
 char* get_current_working_directory ();
 
 // Operational
-void write_random_payload(char* physical_memory, int payload_size, int physical_address);
+void write_random_payload(char* physical_memory, int payload_size, int start_address);
 int get_random_physical_frame();
 int get_available_physical_frame_count();
 int frame_to_physical_address(int frame_number);
 
 // Debugging
 void print_mem_config(int payload_size, int frame);
-void print_payload();
+void print_payload_header();
 void print_header_end (char char_to_print, int count);
 void clear_console();
 

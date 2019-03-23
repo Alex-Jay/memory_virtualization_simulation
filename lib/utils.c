@@ -20,13 +20,13 @@ void init_random_seed()
 	srand((unsigned) time(&t));
 }
 
-// Random Number Generator
-// Author: Tutorials Point
 // Source: https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
+// Author: Tutorials Point
 int get_random_int(int min, int max)
 {
-	if (PAYLOAD_UPPER_BOUNDS == PAYLOAD_LOWER_BOUNDS)
-		return 0;
+	/* If equal payload size bounds, return PAYLOAD_LOWER_BOUNDS */
+	if (PAYLOAD_LOWER_BOUNDS == PAYLOAD_UPPER_BOUNDS)
+		return PAYLOAD_LOWER_BOUNDS;
 
 	/* Generate a random integer */
 	int random_int = rand() % (max + 1 - min) + min;
@@ -98,24 +98,46 @@ char* get_current_working_directory ()
 }
 
 /*================================= OPERATIONAL ================================*/
-void write_random_payload(char* physical_memory, int payload_size, int physical_address)
+void write_random_payload(char* physical_memory, int payload_size, int start_address)
 {
-	print_payload();
+	print_payload_header();
+
+	/* Memory not defined or start_address is out of bounds */
+	if (physical_memory == NULL || start_address >= PHYSICAL_MEMORY_SIZE)
+	{
+		printf("%s - Failed To Write To Physical Memory...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
 	printf("%s - Writing Random Payload to Physical Memory...\n", CORE_PRINT_TAG);
 
-	if (physical_memory == NULL)
-		return;
+	int start_frame 			= floor(start_address / PAGE_SIZE);
+	int payload_in_frames 		= floor(payload_size / PAGE_SIZE);
+	int end_frame				= start_frame + payload_in_frames;
+	int out_of_bounds_delta 	= end_frame - FRAME_COUNT;
 
-	for(int i = physical_address; i < (physical_address + payload_size); ++i)
+	if ((start_frame + payload_in_frames) >= FRAME_COUNT)
+	{
+		int move_back_frames = out_of_bounds_delta + OOR_FRAME_OFFSET;
+
+		printf("%s - Out of bounds...\n", SEGMENT_PRINT_TAG);
+		printf("Start Frame:\t\t#%i\n", start_frame);
+		printf("Payload Frames:\t\t%i (frames)\n", payload_in_frames);
+		printf("End Frame\t\t#%i\n", end_frame);
+		printf("Out Of Bounds Delta:\t%i (frames)\n", out_of_bounds_delta);
+		printf("%s - Shifting Back Start Address by %i (frames)...\n", SEGMENT_PRINT_TAG, move_back_frames);
+		start_address -= move_back_frames * PAGE_SIZE;
+	}
+
+	/* Write to physical memory */
+	for(int i = start_address; i < (start_address + payload_size); ++i)
 	{
 		physical_memory[i] = (char) get_random_ascii_index();
 	}
 
-	int frame_count = floor(payload_size / PAGE_SIZE);
-
-	printf("Starting Frame:\t\t#%i\n", (physical_address/PAGE_SIZE));
+	printf("Starting Frame:\t\t#%i\n", (start_address / PAGE_SIZE));
 	printf("Wrote Bytes:\t\t%'i (bytes)\n", payload_size);
-	printf("Frames Occupied:\t%i (frames)\n", frame_count);
+	printf("Frames Occupied:\t%i (frames)\n", payload_in_frames);
 
 	print_header_end('=', strlen(TABLE_PAYLOAD_HEADER));
 
@@ -159,7 +181,7 @@ void print_mem_config(int payload_size, int frame)
 	print_header_end ('=', strlen(TABLE_MEMORY_HEADER));
 }
 
-void print_payload()
+void print_payload_header()
 {
 	printf("%s", TABLE_PAYLOAD_HEADER);
 }
