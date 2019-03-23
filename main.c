@@ -36,7 +36,7 @@
 	[+]	Randomly write between [2,048-bytes & 20,480-bytes] of data be-
 			longing to the 'process' previously created.
 
-	[]	Write file to "/data/physical_memory.txt" which displays the
+	[+]	Write file to "/data/physical_memory.txt" which displays the
 			contents of your simulation of physical memory in linear &
 			readable form. (Label which addresses are & are not used.
 
@@ -58,7 +58,7 @@
 int main()
 {
 	setlocale(LC_NUMERIC, "");										/* Enable digit padding. i.e. 100000 => 100,000 */
-	char* MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
+	char* PHYSICAL_MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
 	char* PAGE_TABLE_FILE_PATH = strcat(get_current_working_directory(), "/data/page_table.txt");
 
 	/*=============================== Initialization ===============================*/
@@ -79,20 +79,13 @@ int main()
 
 	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, random_payload_size, physical_address);
+	write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
+	write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
 
-	//write_data_to_file(MEMORY_FILE_PATH, "HELLO WORLD");
-
-	//printf("PHYSICAL MEMORY PATH: %s\n", MEMORY_FILE_PATH);
-	//printf("PAGE TABLE PATH: %s\n", PAGE_TABLE_FILE_PATH);
-
-	// Source: https://stackoverflow.com/questions/3649026/how-to-display-hexadecimal-numbers-in-c
-	// Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
-	//printf("HEX: 0x%02x", 16);
-	
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
 	free(PAGE_TABLE_FILE_PATH);
-	free(MEMORY_FILE_PATH);
+	free(PHYSICAL_MEMORY_FILE_PATH);
 	free(disk_memory);
 	free(physical_memory);
 

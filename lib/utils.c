@@ -70,22 +70,63 @@ void init_page_table_entries(char* physical_memory)
 }
 
 /*================================== FILE I/O ==================================*/
-void write_data_to_file(const char *filepath, const char *data)
+void write_physical_memory_to_file(char* physical_memory, const char *file_path)
 {
-	printf("file_name: %s | data_buffer: %s", filepath, data);
+	printf("%s - Writing Physical Memory: %s\n", FILEIO_PRINT_TAG, file_path);
 
-    FILE *fp = fopen(filepath, "ab");
-    if (fp != NULL)
-    {
-        fputs(data, fp);
-        fclose(fp);
-    }
+	/* Open file for writing [Creates file if doesn't exist, deletes & overwrites the file] */
+    FILE *fp = fopen(file_path, "wb");
+
+	if (fp != NULL)
+	{
+		fprintf(fp, TABLE_PHYSICAL_HEADER, "Address", "Frame", "Content");
+		fprintf(fp, "%s|%s|%s\r\n", "--------", "-------", "---------");
+
+		for(int i = 0; i < PHYSICAL_MEMORY_SIZE; ++i)
+		{
+			fprintf(fp, TABLE_PHYSICAL_MEMORY, i, physical_address_to_frame(i), physical_memory[i]);			
+		}
+	}
+
+	/* Close stream */
+	fclose(fp);
+}
+
+void write_page_table_to_file(char* physical_memory, const char *file_path)
+{
+	printf("%s - Writing Page Table: %s\n", FILEIO_PRINT_TAG, file_path);
+
+	FILE *fp = fopen(file_path, "wb");
+
+	if (fp != NULL)
+	{
+		fprintf(fp, TABLE_PAGE_HEADER, "Page", "Physical Frame", "Is Present?", "Can RW?", "Is Dirty?", "On Disk?");
+		fprintf(fp, "%s|%s|%s|%s|%s|%s\r\n", "--------", "-----------------------", "---------------", "---------------", "---------------", "---------");
+		
+		/* Loop every 2 bytes */
+		for(int i = 0; i < PAGE_TABLE_SIZE; i += 2)
+		{
+			unsigned char physical_frame_number = physical_memory[i];
+			unsigned char control_bits = physical_memory[i + 1];
+
+			int present_flag 	= ((control_bits & C_PRESENT) != 0) ? 1 : 0;
+			int rw_flag 		= ((control_bits & C_READWRITE) != 0) ? 1 : 0;
+			int dirty_flag 		= ((control_bits & C_DIRTY) != 0) ? 1 : 0;
+			int disk_flag 		= ((control_bits & C_DISK) != 0) ? 1 : 0;
+
+			fprintf(fp, TABLE_PAGE_TABLE, i, physical_frame_number, present_flag, rw_flag, dirty_flag, disk_flag);
+		}
+	}
+
+	/* Close stream */
+	fclose(fp);
 }
 
 // Source: http://www.codebind.com/cprogramming/get-current-directory-using-c-program/
 // Author: CodeBind Administrator (Name unknown)
 char* get_current_working_directory ()
 {
+	printf("%s - Retrieving Current Working Directory...\n", FILEIO_PRINT_TAG);
 	char buff[FILENAME_MAX + 1];
 	buff[FILENAME_MAX] = '\0';
 	getcwd( buff, FILENAME_MAX );
@@ -199,6 +240,11 @@ int frame_to_physical_address (int frame_number)
 	// Example: 1 * 256 = 256
 	// Example: 2 * 256 = 512
 	return frame_number * PAGE_SIZE;
+}
+
+int physical_address_to_frame (int physical_address)
+{
+	return floor(physical_address / PAGE_SIZE);
 }
 
 /*================================== DEBUGGING =================================*/
