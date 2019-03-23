@@ -22,25 +22,31 @@ static int PAYLOAD_UPPER_BOUNDS     = 20480;
 static int ASCII_MIN_RANGE          = 33;
 static int ASCII_MAX_RANGE          = 127;
 static int OOR_FRAME_OFFSET         = 20;
+static unsigned int OFFSET_MASK     = 0x00FF;
+static unsigned int BIT_SHIFT_BY    = 8;
 
 static char INIT_PRINT_TAG[]        = "[System.Init]";
 static char CORE_PRINT_TAG[]        = "[System.Core]";
 static char FILEIO_PRINT_TAG[]      = "[System.FileIO]";
 static char ERROR_PRINT_TAG[]       = "[System.Error]";
 static char SEGMENT_PRINT_TAG[]     = "[System.Segmentation]";
+static char DISK_PRINT_TAG[]        = "[System.Swapping]";
+static char TRANSLATION_PRINT_TAG[] = "[System.Translation]";
 
 /* Printf formatting */
-static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t#%d\n";
+static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nPayload Size:\t\t%'d (bytes)\nFrame Count:\t\t%d frames\nRandom Frame:\t\t0x%02x\n";
 static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";
 static char TABLE_PAYLOAD_HEADER[]  = "======================= [Payload] ==========================\n";
-static char TABLE_PHYSICAL_HEADER[] = "%-3s\t| %-3s\t| %-3s\r\n";
-static char TABLE_PAGE_HEADER[]   = "%-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\r\n";
+static char TABLE_P_ENTRY_EXAMPLE[] = "\n================================ Example Page Table Entry ================================\n";
+static char TABLE_TRSLT_HEADER[]    = "======================= [VP/PF Translation] ==========================\n";
+static char TABLE_PHYSICAL_HEADER[] = "%-3s\t\t| %-3s\t\t| %-3s\r\n";
+static char TABLE_PAGE_HEADER[]     = "%-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\t| %-3s\r\n";
 
 // Source: https://stackoverflow.com/questions/3649026/how-to-display-hexadecimal-numbers-in-c
 // Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
-static char TABLE_PHYSICAL_MEMORY[] = "0x%-3x\t\t| %-3i\t\t| %-3c\r\n";
+static char TABLE_PHYSICAL_MEMORY[] = "0x%-3X\t\t| %-3i\t\t| %-3c\r\n";
 
-static char TABLE_PAGE_TABLE[]      = "0x%-3x\t| 0x%-3x\t\t\t| %-3i\t\t| %-3i\t\t| %-3i\t\t| %-3i\r\n";
+static char TABLE_PAGE_TABLE[]      = "0x%-3X\t| 0x%-3X\t\t\t| %-3i\t\t| %-3i\t\t| %-3i\t\t| %-3i\r\n";
 
 /*
     Appendix:

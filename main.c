@@ -57,7 +57,12 @@
 
 int main()
 {
-	setlocale(LC_NUMERIC, "");										/* Enable digit padding. i.e. 100000 => 100,000 */
+	/* Variables */
+	int is_running = 1;
+
+	/* Enable digit padding. i.e. 100000 => 100,000 */
+	setlocale(LC_NUMERIC, "");
+
 	char* PHYSICAL_MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
 	char* PAGE_TABLE_FILE_PATH = strcat(get_current_working_directory(), "/data/page_table.txt");
 
@@ -71,22 +76,28 @@ int main()
 	int random_payload_size = get_random_payload_size();			/* Random size of payload */
 	int random_frame = get_random_physical_frame();					/* Retrieve a random frame [Excluding first 2 frames - Page Table] */
 	int physical_address = frame_to_physical_address(random_frame);	/* Convert random frame to physical address */
-	init_page_table_entries(physical_memory);							/* Initialize page table entries */
+	init_page_table_entries(physical_memory);						/* Initialize page table entries */
 
 	/*================================= Debugging ==================================*/
 	print_mem_config(random_payload_size, random_frame);			/* Print initialized values */
 
 	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, disk_memory, random_payload_size, physical_address);
-	//write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
-	//write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
+	write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
+	write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
 
-	for(int i = 0; i < DISK_MEMORY_SIZE; ++i)
+	print_page_table_entry(physical_memory, 0);
+
+	while(is_running == 1)
 	{
-		printf("[Disk] - #%i -> %i\n", i, disk_memory[i]);
+		unsigned int input_address;
+
+		printf("Enter a Virtual Page Number [Max. 16-bits]:\n");
+		scanf("%X", &input_address);
+		
+		print_physical_frame(physical_memory, input_address);
 	}
 	
-
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
 	free(PAGE_TABLE_FILE_PATH);

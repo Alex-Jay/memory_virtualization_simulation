@@ -11,8 +11,7 @@ BUILDOBJECTS	= 	$(DISTDIR)/main.o\
 default: run
 
 link: $(BUILDOBJECTS)
-	$(CC) $? -o $(DISTDIR)/main.sim
-
+	$(CC) $? -o $(DISTDIR)/simulate
 $(DISTDIR)/main.o: main.c
 	$(CC) $(CFLAGS) main.c -o $(DISTDIR)/main.o
 
@@ -23,4 +22,4 @@ clean:
 	rm -rf ./$(DISTDIR) && mkdir $(DISTDIR) && touch ./$(DISTDIR)/.keep
 
 run: link
-	./$(DISTDIR)/main.sim
+	./$(DISTDIR)/simulate

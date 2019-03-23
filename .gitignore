@@ -5,10 +5,13 @@
 *.ilk
 
 # Executables
-*.sim
+/simulate
 
 # Ignore extention
 *.ingr
+
+# Text files
+*.txt
 
 # Visual Studio Code generated items
 /.vscode

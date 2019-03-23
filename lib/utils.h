@@ -27,6 +27,8 @@ int physical_address_to_frame (int physical_address);
 // Debugging
 void print_mem_config(int payload_size, int frame);
 void print_payload_header();
+void print_page_table_entry(char* physical_memory, int page_number);
+void print_physical_frame(char* physical_memory, unsigned int input_address);
 void print_header_end (char char_to_print, int count);
 void clear_console();
 
