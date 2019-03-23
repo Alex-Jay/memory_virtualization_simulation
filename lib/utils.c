@@ -15,7 +15,7 @@ int physical_frame_counter		= 0;
 int disk_frame_counter			= 0;
 
 /*=============================== INITIALIZATION ===============================*/
-void init_random_seed()
+void init_random_seed ()
 {
 	printf("%s - Initializing Random Generator Seed...\n", INIT_PRINT_TAG);
 	srand(time(NULL));
@@ -25,7 +25,7 @@ void init_random_seed()
 
 // Source: https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
 // Author: Tutorials Point
-int get_random_int(int min, int max)
+int get_random_int (int min, int max)
 {
 	/* If equal payload size bounds, return PAYLOAD_LOWER_BOUNDS */
 	if (PAYLOAD_LOWER_BOUNDS == PAYLOAD_UPPER_BOUNDS)
@@ -37,7 +37,7 @@ int get_random_int(int min, int max)
 	return random_int;
 }
 
-int get_random_payload_size()
+int get_random_payload_size ()
 {
 	printf("%s - Generating Random Payload size...\n", INIT_PRINT_TAG);
 	if (PAYLOAD_UPPER_BOUNDS == PAYLOAD_LOWER_BOUNDS)
@@ -46,14 +46,21 @@ int get_random_payload_size()
 		return get_random_int(PAYLOAD_LOWER_BOUNDS, PAYLOAD_UPPER_BOUNDS);
 }
 
-int get_random_ascii_index()
+int get_random_ascii_index ()
 {
 	return get_random_int(ASCII_MIN_RANGE, ASCII_MAX_RANGE);
 }
 
-void init_page_table_entries(char* physical_memory)
+void init_page_table_entries (char* physical_memory)
 {
 	printf("%s - Initializing Empty Page Table...\n", INIT_PRINT_TAG);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
 	for(int i = 0; i < PAGE_TABLE_SIZE; i += 2)
 	{
 		physical_memory[i] = 0x00;		// Physical Frame Number
@@ -61,9 +68,16 @@ void init_page_table_entries(char* physical_memory)
 	}
 }
 
-void init_disk_entries(char* disk_memory)
+void init_disk_entries (char* disk_memory)
 {
 	printf("%s - Initializing Empty Disk Block...\n", INIT_PRINT_TAG);
+
+	if (!disk_memory)
+	{
+		printf("%s - Disk Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
 	for(int i = 0; i < PAGE_TABLE_SIZE; ++i)
 	{
 		disk_memory[i] = 0x00;		// Data
@@ -71,9 +85,15 @@ void init_disk_entries(char* disk_memory)
 }
 
 /*================================== FILE I/O ==================================*/
-void write_physical_memory_to_file(char* physical_memory, const char *file_path)
+void write_physical_memory_to_file (char* physical_memory, const char *file_path)
 {
 	printf("%s - Writing Physical Memory: %s\n", FILEIO_PRINT_TAG, file_path);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
 
 	/* Open file for writing [Creates file if doesn't exist, deletes & overwrites the file] */
     FILE *fp = fopen(file_path, "wb");
@@ -93,9 +113,15 @@ void write_physical_memory_to_file(char* physical_memory, const char *file_path)
 	fclose(fp);
 }
 
-void write_page_table_to_file(char* physical_memory, const char *file_path)
+void write_page_table_to_file (char* physical_memory, const char *file_path)
 {
 	printf("%s - Writing Page Table: %s\n", FILEIO_PRINT_TAG, file_path);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
 
 	int page_count = 0;
 
@@ -109,16 +135,49 @@ void write_page_table_to_file(char* physical_memory, const char *file_path)
 		/* Loop every 2 bytes */
 		for(int i = 0; i < PAGE_TABLE_SIZE; i += 2)
 		{
-			unsigned char physical_frame_number = physical_memory[i];
-			unsigned char control_bits = physical_memory[i + 1];
+			uchar_t physical_frame_number = physical_memory[i];
+			uchar_t control_bits = physical_memory[i + 1];
 
-			unsigned int present_flag 	= ((control_bits & C_PRESENT) != 0) ? 1 : 0;
-			unsigned int rw_flag 		= ((control_bits & C_READWRITE) != 0) ? 1 : 0;
-			unsigned int dirty_flag 	= ((control_bits & C_DIRTY) != 0) ? 1 : 0;
-			unsigned int disk_flag 		= ((control_bits & C_DISK) != 0) ? 1 : 0;
+			uint_t present_flag 	= ((control_bits & C_PRESENT) != 0) ? 1 : 0;
+			uint_t rw_flag 		= ((control_bits & C_READWRITE) != 0) ? 1 : 0;
+			uint_t dirty_flag 	= ((control_bits & C_DIRTY) != 0) ? 1 : 0;
+			uint_t disk_flag 		= ((control_bits & C_DISK) != 0) ? 1 : 0;
 
 			fprintf(fp, TABLE_PAGE_TABLE, page_count, physical_frame_number, present_flag, rw_flag, dirty_flag, disk_flag);
 			page_count++;
+		}
+	}
+
+	/* Close stream */
+	fclose(fp);
+}
+
+void write_disk_memory_to_file (char* disk_memory, const char *file_path)
+{
+	printf("%s - Writing Disk Memory: %s\n", FILEIO_PRINT_TAG, file_path);
+
+	int disk_frame_counter = 0;
+
+	if (!disk_memory)
+	{
+		printf("%s - Disk Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
+	/* Open file for writing [Creates file if doesn't exist, deletes & overwrites the file] */
+    FILE *fp = fopen(file_path, "wb");
+
+	if (fp != NULL)
+	{
+		fprintf(fp, "%-3s\t\t| %-3s\r\n", "Page", "Content");
+		fprintf(fp, "%s|%s\r\n", "----------------", "----------------");
+
+		for(int i = 0; i < DISK_MEMORY_SIZE; ++i)
+		{
+			fprintf(fp, "0x%02X\t\t| %-3c\r\n", disk_frame_counter, disk_memory[i]);
+
+			if (i > 0 && i % PAGE_SIZE == 0)
+				disk_frame_counter++;	
 		}
 	}
 
@@ -146,9 +205,15 @@ char* get_current_working_directory ()
 }
 
 /*================================= OPERATIONAL ================================*/
-void write_random_payload(char* physical_memory, char* disk_memory, int payload_size, int start_address)
+void write_random_payload (char* physical_memory, char* disk_memory, int payload_size, int start_address)
 {
 	print_payload_header();
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
 
 	/* Memory not defined or start_address is out of bounds */
 	if (physical_memory == NULL || start_address >= PHYSICAL_MEMORY_SIZE)
@@ -175,6 +240,8 @@ void write_random_payload(char* physical_memory, char* disk_memory, int payload_
 		printf("[End Frame]:\t\tx0%04X\n", end_frame);
 		printf("[Overflow Frame Delta]:\t%i (frames)\n", out_of_bounds_delta);
 		printf("%s - Shifting Back Start Address by %i (frames)...\n", SEGMENT_PRINT_TAG, move_back_frames);
+
+		/* Shift back address N amount of frames in which the payload will fully fit into the address-space */
 		start_address -= move_back_frames * PAGE_SIZE;
 	}
 
@@ -187,19 +254,21 @@ void write_random_payload(char* physical_memory, char* disk_memory, int payload_
 		// If [i] is the start of a frame
 		if (i % PAGE_SIZE == 0)
 		{
-			unsigned char control_bits = 0x0000;			/* Reset every frame */
-			unsigned int current_frame = physical_address_to_frame (i);
+			/* Reset every frame */
+			uchar_t control_bits = 0x0000;
+			uint_t current_frame = physical_address_to_frame (i);
 
-			/* All frames */
+			/* All frames, except last 2 frames */
 			if	(physical_frame_counter < (payload_in_frames - 2))
 			{
-				control_bits |= C_PRESENT | C_READWRITE;	/* Set current flags to true */
+				/* Set current flags to true */
+				control_bits |= C_PRESENT | C_READWRITE;
 				write_page_table_entry(physical_memory, current_frame, control_bits);
 			}
-			/* 2 last frames */
-			else
+			else /* Last 2 frames */
 			{
-				control_bits |= C_READWRITE | C_DISK;		/* Set DISK flag to true */
+				/* Set DISK flag to true */
+				control_bits |= C_READWRITE | C_DISK;
 
 				write_page_table_entry(physical_memory, disk_frame_counter, control_bits);
 				write_disk_entry(physical_memory, disk_memory);
@@ -207,6 +276,7 @@ void write_random_payload(char* physical_memory, char* disk_memory, int payload_
 				/* Skip a frame of data if DISK*/
 				i += PAGE_SIZE;
 
+				/* Set any frame that is with DISK flag to 0x00 onwards */
 				disk_frame_counter++;
 			}
 
@@ -219,13 +289,16 @@ void write_random_payload(char* physical_memory, char* disk_memory, int payload_
 	printf("Frames Occupied:\t%i (frames)\n", payload_in_frames);
 
 	print_header_end('=', strlen(TABLE_PAYLOAD_HEADER));
-
-	// Null terminator
-	//physical_memory[payload_size] = '\0';
 }
 
-void write_page_table_entry(char* physical_memory, unsigned char frame_number, unsigned char control_bits)
+void write_page_table_entry (char* physical_memory, uchar_t frame_number, uchar_t control_bits)
 {
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
 	/* Write 2 bytes for page table entry */
 	physical_memory[page_table_page_counter] = frame_number;
 	physical_memory[page_table_page_counter + 1] = control_bits;
@@ -233,9 +306,15 @@ void write_page_table_entry(char* physical_memory, unsigned char frame_number, u
 	page_table_page_counter += 2;
 }
 
-void write_disk_entry(char* physical_memory, char* disk_memory)
+void write_disk_entry (char* physical_memory, char* disk_memory)
 {
 	printf("%s - Writing To DISK...\n", DISK_PRINT_TAG);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
 
 	/* Write pseudo-random data for DISK memory */
 	for (int i = 0; i < PAGE_TABLE_SIZE; ++i)
@@ -252,6 +331,34 @@ int get_random_physical_frame ()
 	int max = FRAME_COUNT;
 
 	return get_random_int(min, max);
+}
+
+int get_available_random_pte (char* physical_memory)
+{
+	//printf("%s - Retrieving Random Available Page Table Entry...\n\n", CORE_PRINT_TAG);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return -1;
+	}
+
+	for(int pte_index = 0; pte_index < PAGE_TABLE_SIZE; pte_index += 2)
+	{
+		//uchar_t physical_frame_number = physical_memory[pte_index];	/* Physical Frame Number */
+		uchar_t control_bits = physical_memory[pte_index + 1];			/* Control Bits */
+		
+		/* Frame is not occupied [No C_PRESENT flag set] */
+		if ((control_bits & C_PRESENT) == 0)
+		{
+			/* Set C_PRESENT flag upon returning out of the function */
+			physical_memory[pte_index + 1] |= C_PRESENT;
+
+			return pte_index;
+		}
+	}
+
+	return -1;
 }
 
 int get_available_physical_frame_count ()
@@ -277,61 +384,111 @@ int physical_address_to_frame (int physical_address)
 	return floor(physical_address / PAGE_SIZE);
 }
 
-int page_to_physical_frame (char* physical_memory, int virtual_page_number, int offset)
+int page_to_physical_frame (char* physical_memory, ushort_t input_address, int virtual_page_number, int offset)
 {
-	printf("[Virtual Page Number]:\t\t0x%04X\n", virtual_page_number);
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return -1;
+	}
 
-	unsigned char virtual_address = virtual_page_number * 2;
-	printf("[Virtual Address]:\t\t0x%04X\n", virtual_address);
-
-	unsigned char control_bits = physical_memory[(virtual_page_number * 2) + 1];
-	printf("[Control Bits]:\t\t\t0x%04X\n", control_bits);
+	uchar_t virtual_address 			= virtual_page_number * 2;
+	uchar_t control_bits 				= physical_memory[(virtual_page_number * 2) + 1];
+	uchar_t physical_frame_number 		= physical_memory[virtual_address];
+	// Source: https://www.anintegratedworld.com/masking-bit-shifting-and-0xff00/
+	// Author: [CLOUDNTHINGS] - https://www.anintegratedworld.com/author/sean/
+	ushort_t l_shifted_page_number 		= (physical_frame_number & OFFSET_MASK) << 8;
+	ushort_t masked_page_number 		= l_shifted_page_number | offset;
 
 	/* If on disk, retrieve into any available frame */
 	if ((control_bits & C_DISK) != 0)
 	{
-		//swap_page_from_disk();
+		int pte_index = get_available_pte_slot_for_disk (physical_memory);
 	}
 
-	unsigned char physical_frame_number = physical_memory[virtual_address];
-
-	// Source: https://www.anintegratedworld.com/masking-bit-shifting-and-0xff00/
-	// Author: [CLOUDNTHINGS] - https://www.anintegratedworld.com/author/sean/
-	unsigned short l_shifted_page_number = (physical_frame_number & OFFSET_MASK) << 8;
-	printf("[Physical Frame Number]:\t0x%04X\n", l_shifted_page_number);
-
-	printf("[Page Offset]:\t\t\t0x%04X\n", offset);
-
-	unsigned short masked_page_number = l_shifted_page_number | offset;
-	printf("[Frame Number & Offset]:\t0x%04X\n", masked_page_number);
+	print_translation_data(physical_memory, input_address,
+		virtual_page_number, virtual_address, control_bits,
+		physical_frame_number, l_shifted_page_number, offset,
+		masked_page_number
+	);
 
 	return masked_page_number;
 }
 
+int get_available_pte_slot_for_disk (char* physical_memory)
+{
+	printf("%s - Segmentation Fault. Retrieving Available PTE...\n\n", DISK_PRINT_TAG);
+
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return -1;
+	}
+
+	return get_available_random_pte(physical_memory);
+}
+
 /*================================== DEBUGGING =================================*/
-void print_mem_config(int payload_size, int frame)
+void print_mem_config (int payload_size, int frame)
 {
 	printf ("\n%s", TABLE_MEMORY_HEADER);
 	printf (TABLE_BODY_FORMAT, PHYSICAL_MEMORY_SIZE, payload_size, get_available_physical_frame_count(), frame);
 	print_header_end ('=', strlen(TABLE_MEMORY_HEADER));
 }
 
-void print_payload_header()
+void print_payload_header ()
 {
 	printf("%s", TABLE_PAYLOAD_HEADER);
 }
 
-void print_page_table_entry(char* physical_memory, int page_number)
+void print_translation_data (char* physical_memory, ushort_t input_address,
+	ushort_t virtual_page_number, uchar_t virtual_address, uchar_t control_bits,
+	uchar_t phy_frame_number, ushort_t l_shifted_page_number, ushort_t page_offset,
+	ushort_t masked_page_number)
 {
-	unsigned int page_address = page_number * PAGE_SIZE;
+	printf("%s", TABLE_TRSLT_HEADER);
+	printf("%s - Beginning Address Translation...\n", TRANSLATION_PRINT_TAG);
 
-	unsigned char physical_frame_number = physical_memory[page_address];
-	unsigned char control_bits = physical_memory[page_address + 1];
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
 
-	int present_flag 	= ((control_bits & C_PRESENT) != 0) ? 1 : 0;
-	int rw_flag 		= ((control_bits & C_READWRITE) != 0) ? 1 : 0;
-	int dirty_flag 		= ((control_bits & C_DIRTY) != 0) ? 1 : 0;
-	int disk_flag 		= ((control_bits & C_DISK) != 0) ? 1 : 0;
+	printf("[User Input]:\t\t\t0x%04X\n", input_address);
+	printf("[Page Number]:\t\t\t0x%04X\n", virtual_page_number);
+	printf("[Virtual Address]:\t\t0x%04X\n", virtual_address);
+	printf("[Control Bits]:\t\t\t0x%04X\n", control_bits);
+	printf("[Physical Frame Number]:\t0x%04X\n", l_shifted_page_number);
+	printf("[Page Offset]:\t\t\t0x%04X\n", page_offset);
+	printf("[Frame Number & Offset]:\t0x%04X\n", masked_page_number);
+	//printf("[Content @ 0x%04X]:\t\t%c\n", masked_page_number, data);
+
+	printf("%s", TABLE_FRAME_HEADER);
+	printf(TABLE_PHYSICAL_HEADER, "Address", "Frame", "Content");
+	printf("%s|%s|%s\r\n", "----------------", "---------------", "----------------");
+	printf(TABLE_PHYSICAL_MEMORY, masked_page_number, physical_address_to_frame(masked_page_number), physical_memory[masked_page_number]);	
+	print_header_end('=', 50);
+	print_header_end('=', strlen(TABLE_TRSLT_HEADER));
+}
+
+void print_page_table_entry (char* physical_memory, int page_number)
+{
+	if (!physical_memory)
+	{
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
+	}
+
+	uint_t page_address = page_number * PAGE_SIZE;
+
+	uchar_t physical_frame_number = physical_memory[page_address];
+	uchar_t control_bits = physical_memory[page_address + 1];
+
+	int present_flag 	= ((control_bits & C_PRESENT) 	!= 0) 	?	1	:	0;
+	int rw_flag 		= ((control_bits & C_READWRITE) != 0) 	?	1	:	0;
+	int dirty_flag 		= ((control_bits & C_DIRTY) 	!= 0) 	?	1	:	0;
+	int disk_flag 		= ((control_bits & C_DISK) 		!= 0) 	?	1	:	0;
 
 	printf("%s", TABLE_P_ENTRY_EXAMPLE);
 	printf(TABLE_PAGE_HEADER, "Page", "Physical Frame", "Is Present?", "Can RW?", "Is Dirty?", "On Disk?");
@@ -340,50 +497,24 @@ void print_page_table_entry(char* physical_memory, int page_number)
 	print_header_end ('=', strlen(TABLE_P_ENTRY_EXAMPLE) - 1);
 }
 
-void print_physical_frame(char* physical_memory, unsigned short input_address)
+void print_physical_frame_contents (char* physical_memory, ushort_t input_address)
 {
-	printf("%s", TABLE_TRSLT_HEADER);
-	printf("%s - Beginning Address Translation...\n", TRANSLATION_PRINT_TAG);
-	printf("[User Input]:\t\t\t0x%04X\n", input_address);
-
-	unsigned short page_number = input_address >> BIT_SHIFT_BY;
-	printf("[Page Number]:\t\t\t0x%04X\n", page_number);
-
-	unsigned char virtual_address = page_number * 2;
-	printf("[Virtual Address]:\t\t0x%04X\n", virtual_address);
-
-	unsigned char control_bits = physical_memory[(page_number * 2) + 1];
-	printf("[Control Bits]:\t\t\t0x%04X\n", control_bits);
-
-	/* If on disk, retrieve into any available frame */
-	if ((control_bits & C_DISK) != 0)
+	if (!physical_memory)
 	{
-		//swap_page_from_disk();
+		printf("%s - Physical Memory Not Defined...\n", ERROR_PRINT_TAG);
+		return;
 	}
 
-	unsigned char physical_frame_number = physical_memory[virtual_address];
+	ushort_t virtual_page_number 	= input_address >> BIT_SHIFT_BY;
+	ushort_t page_offset 			= input_address & OFFSET_MASK;
+	ushort_t physical_frame 		= page_to_physical_frame (physical_memory, input_address, virtual_page_number, page_offset);
+	uchar_t data 					= physical_memory[physical_frame];
 
-	// Source: https://www.anintegratedworld.com/masking-bit-shifting-and-0xff00/
-	// Author: [CLOUDNTHINGS] - https://www.anintegratedworld.com/author/sean/
-	unsigned short l_shifted_page_number = (physical_frame_number & OFFSET_MASK) << 8;
-	printf("[Physical Frame Number]:\t0x%04X\n", l_shifted_page_number);
-
-	unsigned short page_offset = input_address & OFFSET_MASK;
-	printf("[Page Offset]:\t\t\t0x%04X\n", page_offset);
-
-	unsigned short masked_page_number = l_shifted_page_number | page_offset;
-	printf("[Frame Number & Offset]:\t0x%04X\n", masked_page_number);
-
-	unsigned char data = physical_memory[masked_page_number];
-	printf("[Content @ 0x%04X]:\t\t%c\n", masked_page_number, data);
-
-	printf("%s", TABLE_FRAME_HEADER);
-	printf(TABLE_PHYSICAL_HEADER, "Address", "Frame", "Content");
-	printf("%s|%s|%s\r\n", "----------------", "---------------", "----------------");
-	printf(TABLE_PHYSICAL_MEMORY, masked_page_number, physical_address_to_frame(masked_page_number), physical_memory[masked_page_number]);	
-	print_header_end('=', 50);
-	print_header_end('=', strlen(TABLE_TRSLT_HEADER));		
-
+	if (data)
+		printf("[Content @ 0x%04X]:\t%c\n", physical_frame, data);
+	else
+		printf("[Content @ 0x%04X]:\tN/A\n", physical_frame);
+	
 }
 
 void print_header_end (char char_to_print, int count)

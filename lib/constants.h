@@ -39,6 +39,7 @@ static char TABLE_BODY_FORMAT[]     = "Phyiscal Memory:\t%'d (bytes)\nPayload Si
 // Author: [codaddict] - https://stackoverflow.com/users/227665/codaddict
 static char TABLE_PHYSICAL_MEMORY[] = "0x%02X\t\t| %-3i\t\t| %-3c\r\n";
 static char TABLE_PAGE_TABLE[]      = "0x%02X\t| 0x%02X\t\t\t| %-3i\t\t| %-3i\t\t| %-3i\t\t| %-3i\r\n";
+static char HEX_PAD_4_FORMAT[]      = "0x%04X";
 
 /* printf Headers*/
 static char TABLE_MEMORY_HEADER[]   = "============== [Init. Memory Configuration] ================\n";

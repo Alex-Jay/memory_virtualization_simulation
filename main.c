@@ -44,14 +44,14 @@
 			contents of your simulated page table in linear, readable
 			form.
 
-	[+]	Add 2 entries to the Page Table which points to pages which
+	[-]	Add 2 entries to the Page Table which points to pages which
 			are not stored in your simulated physical memory (Swapping),
 			store content for these pages in "/data" folder.
 
-	[]	Print, to console, a human-readable description of the stru-
+	[+]	Print, to console, a human-readable description of the stru-
 			cture of a single page table entry you have selected.
 
-	[]	Display prompt which allows the user to enter any virtual
+	[+]	Display prompt which allows the user to enter any virtual
 			memory address in your system, in HEXIDECIMAL form.
 */
 
@@ -64,6 +64,7 @@ int main()
 	setlocale(LC_NUMERIC, "");
 
 	char* PHYSICAL_MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/physical_memory.txt");
+	char* DISK_MEMORY_FILE_PATH = strcat(get_current_working_directory(), "/data/disk_memory.txt");
 	char* PAGE_TABLE_FILE_PATH = strcat(get_current_working_directory(), "/data/page_table.txt");
 
 	/*=============================== Initialization ===============================*/
@@ -84,7 +85,9 @@ int main()
 
 	/*=================================== Core =====================================*/
 	write_random_payload(physical_memory, disk_memory, random_payload_size, physical_address);
+
 	write_physical_memory_to_file(physical_memory, PHYSICAL_MEMORY_FILE_PATH);
+	write_disk_memory_to_file (disk_memory, DISK_MEMORY_FILE_PATH);
 	write_page_table_to_file(physical_memory, PAGE_TABLE_FILE_PATH);
 
 	print_page_table_entry(physical_memory, 0);
@@ -97,12 +100,13 @@ int main()
 		scanf("%hX", &input_address);
 		printf("\n");
 		
-		print_physical_frame(physical_memory, input_address);
+		print_physical_frame_contents (physical_memory, input_address);
 	}
 	
 	/*============================== Garbage Collect ===============================*/
 	// Free memory from heap
 	free(PAGE_TABLE_FILE_PATH);
+	free(DISK_MEMORY_FILE_PATH);
 	free(PHYSICAL_MEMORY_FILE_PATH);
 	free(disk_memory);
 	free(physical_memory);
