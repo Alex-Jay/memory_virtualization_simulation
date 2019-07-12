@@ -6,7 +6,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/9fwk65mjh2lgbr8j?svg=true)](https://ci.appveyor.com/project/Alex-Jay/memory-virtualization-simulaton)
 
 **Subject**: Operating Systems
-**Degree**: BSc. (Hons) Computer Science in Games Development
+**Degree**: BSc (Hons) Computing in Games Development
 
 # Architecture
 **Physical Memory**: 0 - 65,535 bytes
